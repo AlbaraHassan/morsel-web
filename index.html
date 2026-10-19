@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Morsel: Food Journal</title>
+<meta name="description" content="Type what you ate, like a note. Morsel finds the calories and macros privately on your iPhone. Undo anything. Free to start, no ads, no account.">
+<link rel="canonical" href="https://albarahassan.github.io/morsel-web/">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#FBFAF7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151413" media="(prefers-color-scheme: dark)">
+<style>
+  :root {
+    --paper: #FBFAF7;
+    --paper-raised: #FFFFFF;
+    --ink: #1D1D1F;
+    --ink-2: #6B6B70;
+    --ink-3: #8E8E93;
+    --rule: #E8E5DF;
+    --leader: #C9C4BA;
+    --persimmon: #E8502A;
+    --on-persimmon: #141416;
+    --protein: #9E2F5E;
+    --carbs: #B98008;
+    --fat: #6B7F27;
+    --serif: ui-serif, "New York", Georgia, "Times New Roman", serif;
+    --sans: system-ui, -apple-system, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #151413;
+      --paper-raised: #1E1D1B;
+      --ink: #F2F1EE;
+      --ink-2: #A3A3A8;
+      --ink-3: #8E8E94;
+      --rule: #2B2A28;
+      --leader: #57544F;
+      --persimmon: #FF6A45;
+      --protein: #E77AA6;
+      --carbs: #F2BE4A;
+      --fat: #9DB35A;
+    }
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 17px/1.5 var(--sans);
+    overflow-wrap: break-word;
+  }
+  a { color: inherit; text-decoration-color: var(--persimmon); text-underline-offset: 3px; }
+  a:hover { color: var(--persimmon); }
+  :focus-visible { outline: 2px solid var(--persimmon); outline-offset: 3px; border-radius: 6px; }
+  .skip { position: absolute; left: -999px; top: 8px; background: var(--paper-raised); padding: 8px 12px; border-radius: 8px; }
+  .skip:focus { left: 16px; }
+  .wrap { width: 100%; max-width: 980px; margin: 0 auto; padding: 0 16px; }
+  @media (min-width: 640px) { .wrap { padding: 0 32px; } }
+  h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.15; margin: 0; }
+  h2 { font-size: clamp(26px, 4vw, 34px); margin-bottom: 12px; }
+  h3 { font-size: 20px; margin-bottom: 4px; }
+  p { margin: 0 0 12px; }
+  .muted { color: var(--ink-2); }
+
+  header.top { padding: 20px 0; }
+  .brand { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+  .brand svg { width: 34px; height: 34px; }
+  .wordmark { font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 28px; letter-spacing: -0.01em; }
+
+  .hero { display: grid; gap: 40px; padding-top: 24px; padding-bottom: 56px; align-items: center; }
+  @media (min-width: 860px) { .hero { grid-template-columns: 1.05fr 1fr; gap: 56px; padding-top: 48px; } }
+  .hero h1 { font-size: clamp(38px, 7vw, 60px); letter-spacing: -0.015em; margin-bottom: 16px; }
+  .hero .lede { font-size: 20px; color: var(--ink-2); max-width: 32em; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 24px; }
+  .button {
+    display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 22px;
+    border-radius: 999px; background: var(--persimmon); color: var(--on-persimmon); font-weight: 600;
+    text-decoration: none;
+  }
+  .button:hover { color: var(--on-persimmon); filter: brightness(1.05); }
+  .cta small { color: var(--ink-2); font-size: 15px; }
+
+  /* The notebook illustration */
+  .notebook {
+    background: var(--paper-raised); border: 1px solid var(--rule); border-radius: 22px;
+    padding: 24px 20px 16px; box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 18px 40px -24px rgba(60,40,20,.25);
+    max-width: 440px; width: 100%; justify-self: center;
+  }
+  .notebook .day { font-family: var(--serif); font-weight: 600; font-size: 28px; }
+  .notebook .date { color: var(--ink-2); font-size: 15px; margin-bottom: 18px; }
+  .meal { font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2);
+    display: flex; justify-content: space-between; border-bottom: 1px solid var(--rule); padding-bottom: 4px; margin-bottom: 6px; }
+  .meal span:last-child { font-variant-numeric: tabular-nums; }
+  .lines { list-style: none; margin: 0 0 16px; padding: 0; }
+  .line { display: grid; grid-template-columns: 22px 1fr auto; align-items: baseline; gap: 4px 8px; padding: 6px 0; }
+  .line svg { width: 18px; height: 18px; align-self: center; color: var(--ink-3); }
+  .line .text { display: flex; align-items: baseline; min-width: 0; }
+  .line .text span { flex: 0 1 auto; }
+  .line .text::after { content: ""; flex: 1 1 1em; min-width: 1em; margin: 0 2px 0 8px; border-bottom: 2px dotted var(--leader); transform: translateY(-4px); }
+  .line .value { font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; min-width: 3.2ch; }
+  /* Values settle in once, like the app's ink settle; static with Reduce Motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    .line .value { animation: settle .5s ease-out .2s both; }
+    .line:nth-child(2) .value { animation-delay: .35s; }
+    .line:nth-child(3) .value { animation-delay: .5s; }
+  }
+  @keyframes settle { from { opacity: .4; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .goalbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+    border-top: 1px solid var(--rule); padding-top: 14px; }
+  .goalbar .left { font-family: var(--sans); font-weight: 600; font-size: 28px; font-variant-numeric: tabular-nums; line-height: 1; }
+  .goalbar .left small { display: block; font-size: 12px; font-weight: 500; color: var(--ink-2); margin-top: 4px; }
+  .macros { display: grid; gap: 6px; font-size: 12px; font-variant-numeric: tabular-nums; min-width: 150px; }
+  .macro { display: grid; grid-template-columns: 1.2em 1fr auto; gap: 6px; align-items: center; color: var(--ink-2); }
+  .macro b { color: var(--ink); font-weight: 600; }
+  .bar { height: 5px; background: var(--rule); border-radius: 3px; overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: 3px; }
+
+  section { padding: 48px 0; border-top: 1px solid var(--rule); }
+  .promises { display: grid; gap: 20px; }
+  @media (min-width: 720px) { .promises { grid-template-columns: repeat(4, 1fr); } }
+  .promise { font-family: var(--serif); font-size: 21px; line-height: 1.3; }
+  .promise::before { content: ""; display: block; width: 8px; height: 8px; border-radius: 50%; background: var(--persimmon); margin-bottom: 10px; }
+
+  .features { display: grid; gap: 24px 32px; margin-top: 24px; }
+  @media (min-width: 720px) { .features { grid-template-columns: repeat(2, 1fr); } }
+  .features p { color: var(--ink-2); }
+
+  .note { background: var(--paper-raised); border: 1px solid var(--rule); border-radius: 16px; padding: 18px 20px; margin-top: 28px; }
+  .note p:last-child { margin-bottom: 0; }
+
+  .plans { display: grid; gap: 16px; margin-top: 24px; }
+  @media (min-width: 720px) { .plans { grid-template-columns: repeat(4, 1fr); } }
+  .plan { background: var(--paper-raised); border: 1px solid var(--rule); border-radius: 16px; padding: 20px; }
+  .plan h3 { font-size: 19px; }
+  .plan .price { font-size: 17px; font-weight: 600; margin: 6px 0 8px; }
+  .plan p { color: var(--ink-2); font-size: 15px; margin: 0; }
+
+  footer { border-top: 1px solid var(--rule); padding: 32px 0 48px; color: var(--ink-2); font-size: 15px; }
+  footer nav { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-bottom: 16px; }
+  footer nav a { min-height: 44px; display: inline-flex; align-items: center; }
+
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- The Morsel mark: a bitten persimmon (geometry from PolishKit/Brand/PersimmonMark.swift, 24-unit grid). -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="fruit" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF9E4A"/>
+      <stop offset=".55" stop-color="#F26B2B"/>
+      <stop offset="1" stop-color="#E8502A"/>
+    </linearGradient>
+    <mask id="bite" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+      <rect width="24" height="24" fill="#fff"/>
+      <circle cx="20.6" cy="8.6" r="3.3" fill="#000"/>
+      <circle cx="22.4" cy="12.4" r="2.3" fill="#000"/>
+      <circle cx="17.4" cy="5.9" r="2.2" fill="#000"/>
+    </mask>
+    <symbol id="mark" viewBox="0 0 24 24">
+      <path mask="url(#bite)" fill="url(#fruit)" d="M12 6.6C19.2 6.4 21.6 8.2 21.5 13.4C21.4 19.2 18.2 21.4 12 21.4C5.8 21.4 2.6 19.2 2.5 13.4C2.4 8.2 4.8 6.4 12 6.6Z"/>
+      <ellipse cx="6.6" cy="12.25" rx="1.6" ry="2.75" fill="#fff" fill-opacity=".28"/>
+      <path fill="#4F6B3B" d="M12 6.6Q9.5 5.3 5.4 8.2Q8.22 9.3 12 6.6ZM12 6.6Q16.1 5.3 18.6 8.2Q14.82 9.3 12 6.6ZM12 6.6Q10.15 3.95 9.4 5.5Q11.03 7.95 12 6.6ZM12 6.6Q12.75 3.95 14.6 5.5Q13.63 7.95 12 6.6Z"/>
+      <rect x="11.25" y="3.4" width="1.5" height="3" rx=".75" fill="#4F6B3B"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./" aria-label="Morsel home">
+      <svg aria-hidden="true" focusable="false"><use href="#mark"/></svg>
+      <span class="wordmark">morsel</span>
+    </a>
+  </div>
+</header>
+
+<main id="main">
+  <div class="wrap hero">
+    <div>
+      <h1>Type what you ate. That's&nbsp;it.</h1>
+      <p class="lede">A food journal you write like a note. One food per line, in your own words. Calories and macros settle in beside each line a moment later, privately, on your iPhone.</p>
+      <div class="cta">
+        <a class="button" href="https://apps.apple.com/app/id6822028978">Download on the App Store</a>
+        <small>Free to start. No ads. No account.</small>
+      </div>
+    </div>
+
+    <figure class="notebook" aria-label="Illustration of a Morsel journal page: three lines with their calories in a column on the right">
+      <div class="day" aria-hidden="true">Thursday</div>
+      <div class="date" aria-hidden="true">12 November 2026</div>
+      <div class="meal" aria-hidden="true"><span>Breakfast</span><span>536</span></div>
+      <ul class="lines">
+        <li class="line">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 3.5c3.6 0 6.5 5 6.5 9.5a6.5 6.5 0 0 1-13 0c0-4.5 2.9-9.5 6.5-9.5Z"/></svg>
+          <span class="text"><span>2 eggs scrambled in butter</span></span>
+          <span class="value">220</span>
+        </li>
+        <li class="line">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 20V10.5A4 4 0 0 1 8 3.5h8a4 4 0 0 1 2 7V20Z"/><path d="M9.5 13.5h5"/></svg>
+          <span class="text"><span>toast with butter</span></span>
+          <span class="value">126</span>
+        </li>
+        <li class="line">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9h11v5a5.5 5.5 0 0 1-11 0Z"/><path d="M16 10.5h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M9 3.5c-.8 1 .8 2-0 3M12 3.5c-.8 1 .8 2 0 3"/></svg>
+          <span class="text"><span>big oat latte</span></span>
+          <span class="value">190</span>
+        </li>
+      </ul>
+      <div class="goalbar" aria-hidden="true">
+        <div class="left">1,564<small>kcal left</small></div>
+        <div class="macros">
+          <div class="macro"><b>P</b><span class="bar"><i style="width:14%;background:var(--protein)"></i></span><span>19/140</span></div>
+          <div class="macro"><b>C</b><span class="bar"><i style="width:19%;background:var(--carbs)"></i></span><span>42/220</span></div>
+          <div class="macro"><b>F</b><span class="bar"><i style="width:46%;background:var(--fat)"></i></span><span>32/70</span></div>
+        </div>
+      </div>
+    </figure>
+  </div>
+
+  <section aria-labelledby="promises">
+    <div class="wrap">
+      <h2 id="promises">Why Morsel</h2>
+      <div class="promises">
+        <p class="promise">Type what you ate. That's it.</p>
+        <p class="promise">Instant, private, and it remembers how you eat.</p>
+        <p class="promise">Undo anything. Never lose a meal.</p>
+        <p class="promise">Free to start. No ads. No account.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="features">
+    <div class="wrap">
+      <h2 id="features">A notebook that does the arithmetic</h2>
+      <div class="features">
+        <div>
+          <h3>Write it like a note</h3>
+          <p>One food per line, the way you'd say it: "half a chicken burrito", "big oat latte". Meal words become headers with subtotals. Paste a whole list, or dictate it.</p>
+        </div>
+        <div>
+          <h3>Fast, and it learns</h3>
+          <p>Common foods come from a nutrition database on your iPhone, built from USDA FoodData Central, so most lines resolve right away, even offline. Lines you've written before come back with your own numbers.</p>
+        </div>
+        <div>
+          <h3>Every number explains itself</h3>
+          <p>Tap a value to see the foods, the grams, the source and how sure Morsel is. Drag the grams, switch off an assumption, or fix it in words: "only half the rice".</p>
+        </div>
+        <div>
+          <h3>Undo anything</h3>
+          <p>Every line is its own entry, so nothing overwrites anything. Undo and redo everywhere, and Recently Deleted keeps lines for 30 days.</p>
+        </div>
+        <div>
+          <h3>Barcode scanning, free</h3>
+          <p>Scan a package and pick the servings. Product data comes from Open Food Facts. Unknown product? Photograph the label instead.</p>
+        </div>
+        <div>
+          <h3>Goals you can see the math for</h3>
+          <p>Your daily target shows its formula and your chosen rate. Track protein closely, or turn on Gentle mode to hide calories and just keep a journal.</p>
+        </div>
+        <div>
+          <h3>Apple Health, widgets and Siri</h3>
+          <p>Save nutrition and water to Apple Health. See what's left on your Home Screen and Lock Screen, add water from a widget, and log with "Log food in Morsel".</p>
+        </div>
+        <div>
+          <h3>Morsel Pro, when you want more</h3>
+          <p>Snap a meal and get words you can edit, Think harder on tricky lines, Insights from your own data, Fill my macros, recipes and more.</p>
+        </div>
+      </div>
+      <div class="note">
+        <p><strong>Honest about what it needs.</strong> Smart parsing uses Apple Intelligence on your iPhone. Without it, you can still search and pick foods, and common foods still resolve from the built-in database. Snap, Think harder and deep estimates for restaurant dishes need iOS 27 with Apple Intelligence.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="pricing">
+    <div class="wrap">
+      <h2 id="pricing">Free to start. Pro if you want it.</h2>
+      <p class="muted">No ads in either. Free: every line gets its numbers for your first 7 days, then 3 lines a day. Typing, meals, undo, barcode scanning, Apple Health, iCloud sync and export stay free.</p>
+      <div class="plans">
+        <div class="plan">
+          <h3>Free</h3>
+          <p class="price">$0</p>
+          <p>A full first week, then 3 lines a day with numbers. Nothing you write is ever lost.</p>
+        </div>
+        <div class="plan">
+          <h3>Pro Yearly</h3>
+          <p class="price">$29.99 per year</p>
+          <p>after a 7-day free trial. We remind you the day before it ends.</p>
+        </div>
+        <div class="plan">
+          <h3>Pro Monthly</h3>
+          <p class="price">$5.99 per month</p>
+          <p>Cancel any time in your Apple Account settings.</p>
+        </div>
+        <div class="plan">
+          <h3>Pro Lifetime</h3>
+          <p class="price">$59.99 once</p>
+          <p>One payment, no renewal.</p>
+        </div>
+      </div>
+      <p class="muted" style="margin-top:16px;font-size:15px">US prices. Local prices are shown in the App Store. Subscriptions renew automatically unless cancelled at least 24 hours before the period ends. <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Terms</a>.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="privacy">
+    <div class="wrap">
+      <h2 id="privacy">What you eat stays yours</h2>
+      <p>No account, no ads, no server of ours. Your journal lives on your iPhone and in your own iCloud. Parsing runs on your iPhone with Apple Intelligence. The only things that leave it: a barcode number when you scan, and Apple's own iCloud and App Store services. Health data is never used for ads or analytics.</p>
+      <p><a href="privacy.html">Read the privacy policy</a></p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <nav aria-label="Footer">
+      <a href="privacy.html">Privacy</a>
+      <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Terms</a>
+      <a href="support.html">Support</a>
+      <a href="accuracy.html">Accuracy</a>
+      <a href="https://apps.apple.com/app/id6822028978">App Store</a>
+    </nav>
+    <p>Nutrition data: USDA FoodData Central (public domain). Product data: Open Food Facts (ODbL).</p>
+    <p>Morsel by Albara Hassan · albara.m.hassan@gmail.com</p>
+    <p>Apple, iPhone, Apple Intelligence, Apple Health, iCloud and Siri are trademarks of Apple Inc.</p>
+  </div>
+</footer>
+</body>
+</html>

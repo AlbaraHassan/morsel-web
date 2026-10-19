@@ -1,0 +1,163 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Morsel · Accuracy</title><link rel="stylesheet" href="style.css"><link rel="icon" href="icon.png"></head>
+<body><main><header><img src="icon.png" alt=""><a href="./">Morsel</a></header><h1>How accurate is Morsel?</h1>
+<p>Every calorie number is an estimate. We'd rather show you how we test than ask you to trust us, so this page explains the method, the targets we hold ourselves to, and the measured results once they exist.</p>
+<h2>Measured results: pending</h2>
+<p><strong>The first evaluation run has not been published yet.</strong> We will only publish numbers we have measured on the shipping version of the app. Until then, the table below is an empty template, on purpose.</p>
+<table>
+<thead>
+<tr>
+<th>Test group</th>
+<th>Lines</th>
+<th>Measure</th>
+<th>Target</th>
+<th>Measured</th>
+<th>App version</th>
+<th>Date</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Home foods with grams</td>
+<td>100</td>
+<td>within ±10% kcal</td>
+<td>≥ 90%</td>
+<td>pending</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Natural servings ("a cup of rice")</td>
+<td>80</td>
+<td>within ±20% kcal</td>
+<td>≥ 75%</td>
+<td>pending</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Restaurant and branded items</td>
+<td>40</td>
+<td>within ±20% kcal</td>
+<td>≥ 60%</td>
+<td>pending</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Multi-item lines</td>
+<td>40</td>
+<td>within ±20% kcal</td>
+<td>reported</td>
+<td>pending</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Non-English lines</td>
+<td>20</td>
+<td>within ±20% kcal</td>
+<td>reported</td>
+<td>pending</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Lines with typos</td>
+<td>20</td>
+<td>within ±20% kcal</td>
+<td>reported</td>
+<td>pending</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>All lines</td>
+<td>300</td>
+<td>protein, mean absolute error</td>
+<td>≤ 4 g per line</td>
+<td>pending</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Speed (median, on device)</th>
+<th>Target</th>
+<th>Measured</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Your history and the built-in database</td>
+<td>&lt; 50 ms</td>
+<td>pending</td>
+</tr>
+<tr>
+<td>Apple Intelligence on your iPhone</td>
+<td>&lt; 1.2 s</td>
+<td>pending</td>
+</tr>
+</tbody>
+</table>
+<h2>How Morsel estimates a line</h2>
+<p>Each line goes through a few steps and stops at the first one that's sure enough:</p>
+<ol>
+<li><strong>Your history.</strong> If you've logged the same line before, Morsel reuses your confirmed values, including any corrections you made.</li>
+<li><strong>The built-in database.</strong> A quantity parser reads amounts and units ("2", "½ cup", "150 g"), and the food is matched in a nutrition database built from USDA FoodData Central (Foundation, SR Legacy and FNDDS survey foods; 13,660 foods), which lives on your iPhone.</li>
+<li><strong>Apple Intelligence on your iPhone.</strong> For lines the parser can't read alone, Apple's on-device model splits the line into foods, amounts and preparation, and each food is matched in the same database.</li>
+<li><strong>You choose.</strong> If nothing is sure enough, Morsel asks you to pick the food.</li>
+</ol>
+<h2>What the confidence levels mean</h2>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>When</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>High</strong></td>
+<td>Your own past entry, or an exact database match with a weight or a standard portion</td>
+<td>Nothing</td>
+</tr>
+<tr>
+<td><strong>Medium</strong></td>
+<td>A database match where the amount was converted from a volume or count, or estimated by the model</td>
+<td>Check the grams if it matters to you</td>
+</tr>
+<tr>
+<td><strong>Best guess</strong></td>
+<td>Model knowledge without a good database match, or an ambiguous line</td>
+<td>Add grams, pick an alternative, or use Think harder</td>
+</tr>
+</tbody>
+</table>
+<p>Morsel never shows a percentage for confidence. A percentage suggests a precision that a food estimate doesn't have.</p>
+<h2>Where estimates are weakest</h2>
+<p>We'd rather tell you than have you find out.</p>
+<ul>
+<li><strong>Natural servings.</strong> "A bowl of pasta" can be 200 g or 500 g. Research on text-based estimation shows natural servings cause more error than weights. Adding grams, or teaching Morsel "my bowl = 350 g", helps the most.</li>
+<li><strong>Restaurant dishes.</strong> Recipes and portions vary by place and by day. Deep estimates break a dish into typical components and say what they assumed.</li>
+<li><strong>Added fats.</strong> Butter and oil used in cooking are easy to miss and add up quickly. When a preparation usually involves fat (fried, sautéed, scrambled, roasted), Morsel adds a small default, about 1 teaspoon, as a visible assumption you can switch off or change.</li>
+<li><strong>Photos.</strong> Meal photos tend to underestimate portion size. Snap turns a photo into words you can read and edit before they count.</li>
+</ul>
+<h2>How we test</h2>
+<ul>
+<li><strong>Test set v1: 300 lines</strong> written the way people really type: 100 home foods with grams, 80 natural servings, 40 restaurant and branded items, 40 multi-item lines, 20 non-English lines and 20 lines with typos.</li>
+<li><strong>Reference values.</strong> Home foods are computed from USDA FoodData Central. Restaurant and branded references come from the chains' and brands' official nutrition pages, with a link stored for every row and checked by a person.</li>
+<li><strong>Speed</strong> is measured per step on a real iPhone.</li>
+<li><strong>When.</strong> The full set runs before every release. Results are tracked over time, and any drop below the previous release blocks that release until it's fixed or explained here.</li>
+<li><strong>What we publish.</strong> Only measured numbers, with the app version and date. No rounding up, no cherry-picking.</li>
+</ul>
+<h2>Sources</h2>
+<ul>
+<li>USDA FoodData Central, U.S. Department of Agriculture, Agricultural Research Service. Public domain. <a href="https://fdc.nal.usda.gov">fdc.nal.usda.gov</a></li>
+<li>Product data: Open Food Facts, under the Open Database License (ODbL). <a href="https://openfoodfacts.org">openfoodfacts.org</a></li>
+</ul>
+<p>Questions about a number? Write to albara.m.hassan@gmail.com with the line as you typed it.</p><footer><a href="./">Morsel</a><a href="privacy.html">Privacy</a><a href="support.html">Support</a><a href="accuracy.html">Accuracy</a><a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Terms</a></footer></main></body></html>
