@@ -1,7 +1,7 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Morsel · Privacy</title><link rel="stylesheet" href="style.css"><link rel="icon" href="icon.png"></head>
 <body><main><header><img src="icon.png" alt=""><a href="./">Morsel</a></header><h1>Privacy</h1>
-<p>Effective 19 October 2026 · Morsel by Albara Hassan</p>
+<p>Effective 25 October 2026 · Morsel by Albara Hassan</p>
 <p>The short version: what you eat is yours. Morsel has no account, no ads and no server of ours. Your journal stays on your iPhone and, if you use iCloud, in your own private iCloud database. We can't read it, and we don't want to.</p>
 <h2>What stays on your iPhone</h2>
 <ul>
@@ -10,7 +10,7 @@
 <li><strong>Apple Health data.</strong> What Morsel reads from Health (active energy, resting energy, steps, weight) is used on your iPhone to show your day and adjust your goals. It never leaves your device through us.</li>
 <li><strong>Dictation.</strong> Speech is turned into text on your iPhone. Audio is not recorded, stored or sent anywhere.</li>
 <li><strong>The food database.</strong> Morsel ships with a nutrition database built from USDA FoodData Central. Looking up foods happens on your iPhone, offline.</li>
-<li><strong>Smart parsing, Snap and Think harder.</strong> When Apple Intelligence reads a line, turns a meal photo into words or takes a closer look at a tricky dish, it runs on your iPhone with Apple's on-device model.</li>
+<li><strong>Smart parsing.</strong> When Apple Intelligence reads a line, it runs on your iPhone with Apple's on-device model. A few lines go to Apple's Private Cloud Compute instead; see the table below.</li>
 <li><strong>Label photos.</strong> Reading a nutrition label happens on your iPhone with Apple's text recognition.</li>
 <li><strong>Translation.</strong> If you type in a language the on-device model doesn't read, Apple's Translation framework translates the line on your iPhone. The language pack itself is downloaded from Apple when you choose to add it.</li>
 </ul>
@@ -40,11 +40,16 @@
 <td>Buying, restoring or checking Morsel Pro</td>
 <td>Handled by Apple. We never see your payment details.</td>
 </tr>
+<tr>
+<td><strong>Apple Private Cloud Compute</strong> (iOS 27 with Apple Intelligence, from Morsel 1.0.1)</td>
+<td>A closer estimate when the on-device model can't read a line or isn't sure (often restaurant or unusual dishes), Think harder, and Snap on iPhones whose on-device model can't read photos</td>
+<td>The line's words or the meal photo, plus matching foods from the built-in database. Apple's Private Cloud Compute uses them only to answer, doesn't keep them, and doesn't make them available to anyone, including Apple and us. <a href="https://security.apple.com/blog/private-cloud-compute/">How Private Cloud Compute works</a>.</td>
+</tr>
 </tbody>
 </table>
 <p>That's the complete list. There are no ad networks, no tracking SDKs, no social logins and no data brokers in Morsel.</p>
 <h2>Snap photos</h2>
-<p>Snap (Morsel Pro, iOS 27 with Apple Intelligence) turns a meal photo into a line of words you can edit. The photo you take is used once, as input to Apple's on-device model, on your iPhone. Morsel doesn't upload it anywhere and doesn't keep a copy after the line is written.</p>
+<p>Snap (Morsel Pro, iOS 27 with Apple Intelligence) turns a meal photo into a line of words you can edit. The photo you take is used once, as input to Apple's model: on your iPhone when its on-device model can read photos, otherwise on Apple's Private Cloud Compute, which uses it only to answer and doesn't keep it. Morsel doesn't upload it anywhere else and doesn't keep a copy after the line is written.</p>
 <h2>Apple Health</h2>
 <p>Apple Health sync is off until you turn it on in Settings &gt; Apple Health. When it's on, Morsel saves calories, macros, fiber, sugar, sodium, saturated fat, caffeine and water for each line, and weight if you log it. It reads active energy, resting energy, steps and weight to show your day and adjust your goals.</p>
 <p>Health data is never used for advertising, marketing or analytics, never sold and never shared with anyone. When you turn sync off, you choose whether to keep Morsel's entries in Health or remove them.</p>
